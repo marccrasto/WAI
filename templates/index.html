@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--Set the Title of the document-->
+    <title>Revenue Prediction</title>
+    <!--Set the stylesheet that will be referred to when building the page (in this case style.css)-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <!--Set the script, 'defer' means to first parse the html page while downloading the javascript file in the background. That way the .js file could refer to the elements in the html file. The defer attribute is only for external scripts (should only be used if the src attribute is present).-->
+</head>
+<body>
+    <div class="quiz-container" id="quiz">
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="quiz-header">
+                <h1 id="Title">Revenue Prediction</h1>
+                <p>Description</p>
+                <div class="textInput">
+                    <input type="text" id="input1" name="bYear" class="input" placeholder="Enter base year (ex. 2008)" autocomplete="off">
+                    <input type="text" id="input2" name="pYear" class="input" placeholder="Enter predict year (MAX: 2028)" autocomplete="off">
+                </div>
+                <div class="inputArea">
+                    <label for="fileUpload" onclick="saveFile()" class="customFileUpload">Upload File</label>
+                    <input type="file" class="inputFile" name="file" id="fileUpload">
+                </div>
+            </div>
+            <button id="submit" onclick="this.blur();">Submit</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,148 @@
+/*Import using @import. Here we have imported a font.*/
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif&display=swap');
+
+/*Change applies to all elements*/
+* {
+    box-sizing: border-box;
+}
+
+/*Change only applies to elements in the body of the html page*/
+body {
+    background-color: #abacea;
+    font-family: 'PT Serif', sans-serif;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.quiz-container {
+    background-color: white;
+    /*Applies curvature to the box corners*/
+    border-radius: 20px;
+    /*Applies a shadow outline around the box*/
+    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.3);
+    /*Controls width of the box*/
+    width: 600px;
+    max-width: 100%;
+    /*Anything that comes out of this container, whatever extra bit will be removed. So in this case of the button, the bottom corners are removed and so you can only see the rounded corners*/
+    overflow: hidden;
+}
+
+.quiz-header {
+    padding: 0.5rem;
+    text-align: center;
+    justify-content: center;
+}
+
+h1 {
+    margin: 0.5;
+    text-align: center;
+    padding: 0rem;
+}
+
+h2 {
+    margin: 0.5;
+    text-align: center;
+    padding: 9rem;
+}
+
+ul {
+    list-style: none;
+    padding: 0.5rem;
+    text-align:left;
+    justify-content: center;
+}
+
+ul li {
+    margin: 1.5rem 0;
+    font-size: 1.2rem;
+}
+
+button {
+    background-color: #7fff00;
+    transition: all 0.25s;
+    border: none;
+    color: white;
+    text-align: center;
+    display: block;
+    width: 100%;
+    padding: 2rem;
+    font-family: inherit;
+    font-size: 1.8rem;
+    padding: 1rem;
+    cursor: pointer;
+}
+
+/*Applies when you hover over the button*/
+button:hover {
+    background-color: rgb(77, 140, 14);
+}
+
+/*Applies when you press the button*/
+button:focus {
+    background-color: rgb(89, 168, 10);
+    /*Removes the blue (or black) outline when you click the button*/
+    outline: none;
+}
+
+.trial {
+    cursor: pointer;
+}
+
+.inputArea {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+}
+
+.inputFile {
+    display: none;
+}
+
+.customFileUpload {
+    display: inline-block;
+    background-image: linear-gradient(
+        to right,
+        #ff7a18,
+        #af002d,
+        #319197 100%,
+        #319197 200%
+    );
+    background-position-x: 0%;
+    background-size: 200%;
+    border: 0;
+    border-radius: 8px;
+    color: white;
+    padding: 1rem;
+    text-shadow: 0 1px 1px #333;
+    transition: all 0.25s;
+    font-family: inherit;
+    font-size: 1.2rem;
+    max-width: 100%;
+    cursor: pointer;
+}
+
+.customFileUpload:hover {
+    background-position-x: 100%;
+}
+
+.textInput {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input {
+    padding: 1rem;
+    width: 50%;
+    /*Causes the font to change to whatever font is being used by its parent*/
+    font-family: inherit;
+    text-align: center;
+    /*Gets rid of the top, left and right border linings*/
+    border-left: none;
+    border-right: none;
+    border-top: none;
+}
