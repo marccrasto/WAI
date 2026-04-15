@@ -24,6 +24,9 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 16MB
 def upload_form():
     return render_template('index.html')
 
+@app.route("/how")
+def how_page():
+    return render_template("how.html")
 
 def GetChange(di, y):
     year = y

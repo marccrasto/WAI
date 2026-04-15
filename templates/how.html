@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works | ForecastAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container nav-container">
+            <a href="/" class="logo">ForecastAI</a>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/how">How It Works</a>
+                <a href="/upload">Try It</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-copy">
+                    <span class="eyebrow">How It Works</span>
+                    <h1>Understand the data, input format, and forecast output</h1>
+                    <p class="hero-text">
+                        This page explains what information the forecasting model uses, how the
+                        uploaded Excel workbook is interpreted, and what to expect from the
+                        generated forecast.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-light">
+            <div class="container">
+                <div class="section-heading center">
+                    <span class="section-tag">Model Inputs</span>
+                    <h2>What data the model uses</h2>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>Company financial data</h3>
+                        <p class="info-intro">
+                            The model reads company-level financial statement values from the
+                            uploaded workbook. These values form the core financial input used
+                            for forecasting.
+                        </p>
+
+                        <div class="info-list-block">
+                            <h4>Financial values extracted</h4>
+                            <ul>
+                                <li>Revenue</li>
+                                <li>Gross Profit</li>
+                                <li>Interest Expense</li>
+                                <li>Operating Expense</li>
+                                <li>Tax</li>
+                                <li>Net Income</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>Industry trend data</h3>
+                        <p class="info-intro">
+                            The system also adds industry-level context using an internal library
+                            of IBIS industry files. This gives the model information about the
+                            wider business environment surrounding the company.
+                        </p>
+
+                        <div class="info-list-block">
+                            <h4>Industry values extracted</h4>
+                            <ul>
+                                <li>Revenue Change Percentage</li>
+                                <li>Employment Change Percentage</li>
+                                <li>Wages Change Percentage</li>
+                            </ul>
+                        </div>
+
+                        <div class="info-list-block">
+                            <h4>How this file is selected</h4>
+                            <p>
+                                After the workbook is uploaded, the system reads the company’s
+                                Primary SIC code, maps it to the relevant NAICS industry, searches
+                                the internal IBIS library for matching files, and selects the
+                                industry file associated with that company and year.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card" style="margin-top: 40px;">
+                    <h3>Single workbook requirement</h3>
+                    <p class="info-intro">
+                        The system expects a single Excel workbook that contains all required data
+                        in one file. This includes company information, income statement data, and
+                        the broader company report structure used by the parser.
+                    </p>
+
+                    <div class="info-list-block">
+                        <h4>The uploaded Excel file should contain:</h4>
+                        <ul>
+                            <li>Company information section, including the company name and Primary SIC</li>
+                            <li>Income statement section with yearly financial data</li>
+                            <li>Balance sheet section as part of the same workbook structure</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-list-block">
+                        <h4>Important note</h4>
+                        <p>
+                            All of this information should exist within the same Excel file. The
+                            system scans the workbook to locate these sections automatically, so
+                            separating them into multiple files will not work correctly.
+                        </p>
+                    </div>
+
+                    <div class="info-list-block">
+                        <h4>Sample files</h4>
+                        <p>
+                            Sample input files will be available on the <a href="/upload">Try It</a>
+                            page so users can test the model and understand the expected workbook format.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-soft">
+            <div class="container">
+                <div class="section-heading center">
+                    <span class="section-tag">Example Inputs</span>
+                    <h2>Preview of the data used by the system</h2>
+                    <p class="section-subtext" style="color: var(--muted);">
+                        These previews illustrate different sections that exist within a single
+                        uploaded Excel workbook, along with the industry data used by the system.
+                        Click any preview to expand it.
+                    </p>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>IBIS industry file library</h3>
+                        <p class="info-intro">
+                            The project includes a large internal library of IBIS industry files.
+                            Each file corresponds to a specific industry and contains yearly trend
+                            values used to enrich forecasts.
+                        </p>
+                        <button class="preview-image-card preview-trigger" type="button"
+                            data-img="{{ url_for('static', filename='images/ibis-library.png') }}"
+                            data-title="IBIS industry file library">
+                            <img src="{{ url_for('static', filename='images/ibis-library.png') }}" alt="IBIS industry file library preview">
+                        </button>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>Example matched IBIS file</h3>
+                        <p class="info-intro">
+                            This is one example of an IBIS industry file from the larger library.
+                            From the matched file, the system extracts yearly values such as
+                            revenue change, employment change, and wages change.
+                        </p>
+                        <button class="preview-image-card preview-trigger" type="button"
+                            data-img="{{ url_for('static', filename='images/ibis-example.png') }}"
+                            data-title="Example matched IBIS file">
+                            <img src="{{ url_for('static', filename='images/ibis-example.png') }}" alt="Example matched IBIS industry file">
+                        </button>
+                    </div>
+                </div>
+
+                <div class="info-grid" style="margin-top: 30px;">
+                    <div class="info-card">
+                        <h3>Company information section</h3>
+                        <p class="info-intro">
+                            This section of the uploaded workbook contains identifying company
+                            details such as the company name and Primary SIC code. The system uses
+                            this information to connect the company to the appropriate industry
+                            context before forecasting.
+                        </p>
+                        <button class="preview-image-card preview-trigger" type="button"
+                            data-img="{{ url_for('static', filename='images/company-info-preview.png') }}"
+                            data-title="Company information section">
+                            <img src="{{ url_for('static', filename='images/company-info-preview.png') }}" alt="Company information section preview">
+                        </button>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>Income statement preview</h3>
+                        <p class="info-intro">
+                            The uploaded workbook should contain yearly income statement data. The
+                            parser looks for labels such as Total Revenue, Gross Profit, Interest
+                            Expense, Earnings Before Tax, Tax, and Net Income.
+                        </p>
+                        <button class="preview-image-card preview-trigger" type="button"
+                            data-img="{{ url_for('static', filename='images/income-statement-preview.png') }}"
+                            data-title="Income statement preview">
+                            <img src="{{ url_for('static', filename='images/income-statement-preview.png') }}" alt="Income statement preview">
+                        </button>
+                    </div>
+                </div>
+
+                <div class="single-preview-row">
+                    <div class="info-card single-preview-card">
+                        <h3>Balance sheet preview</h3>
+                        <p class="info-intro">
+                            The same uploaded workbook may also contain a balance sheet as part of
+                            the company report. This helps show the overall file structure the
+                            system is designed to read.
+                        </p>
+                        <button class="preview-image-card preview-trigger" type="button"
+                            data-img="{{ url_for('static', filename='images/balance-sheet-preview.png') }}"
+                            data-title="Balance sheet preview">
+                            <img src="{{ url_for('static', filename='images/balance-sheet-preview.png') }}" alt="Balance sheet preview">
+                        </button>
+                    </div>
+                </div>
+
+                <div class="section-heading center" style="margin-top: 56px;">
+                    <h2 style="font-size: 2rem;">What a valid input should include</h2>
+                </div>
+
+                <div class="flow-grid">
+                    <div class="flow-card">
+                        <div class="flow-number">01</div>
+                        <h3>One Excel workbook</h3>
+                        <p>
+                            Upload a single Excel file that contains the company information
+                            section, income statement, and balance sheet structure together.
+                        </p>
+                    </div>
+
+                    <div class="flow-card">
+                        <div class="flow-number">02</div>
+                        <h3>Company identifier</h3>
+                        <p>
+                            The workbook should contain the company name and a Primary SIC code so
+                            the system can map the company to the correct industry context.
+                        </p>
+                    </div>
+
+                    <div class="flow-card">
+                        <div class="flow-number">03</div>
+                        <h3>Report dates and labels</h3>
+                        <p>
+                            The spreadsheet should include yearly report dates and recognizable
+                            financial labels so the parser can locate the required values.
+                        </p>
+                    </div>
+
+                    <div class="flow-card">
+                        <div class="flow-number">04</div>
+                        <h3>Usable base year</h3>
+                        <p>
+                            The base year selected by the user must exist in the uploaded data so
+                            the model has a valid starting point for forecasting.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-dark">
+            <div class="container">
+                <div class="section-heading center">
+                    <span class="section-tag">Forecast Process</span>
+                    <h2>What happens after you upload a file</h2>
+                    <p class="section-subtext">
+                        The application parses the workbook, extracts company metrics, adds
+                        industry context, and then generates year-by-year forecasts.
+                    </p>
+                </div>
+
+                <div class="flow-grid">
+                    <div class="flow-card">
+                        <div class="flow-number">01</div>
+                        <h3>Parse the workbook</h3>
+                        <p>
+                            The uploaded spreadsheet is scanned to identify company details,
+                            reporting years, and the sections containing financial statement data.
+                        </p>
+                    </div>
+
+                    <div class="flow-card">
+                        <div class="flow-number">02</div>
+                        <h3>Extract company metrics</h3>
+                        <p>
+                            The system pulls the financial values needed for forecasting, including
+                            revenue, gross profit, expenses, tax, and net income.
+                        </p>
+                    </div>
+
+                    <div class="flow-card">
+                        <div class="flow-number">03</div>
+                        <h3>Add industry context</h3>
+                        <p>
+                            Using the company’s Primary SIC code, the system maps to the relevant
+                            industry file and adds revenue, employment, and wages trend values.
+                        </p>
+                    </div>
+
+                    <div class="flow-card">
+                        <div class="flow-number">04</div>
+                        <h3>Generate forecasts</h3>
+                        <p>
+                            A deep neural network predicts the next year’s financial values, then
+                            repeats that process recursively for longer forecast ranges.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-light">
+            <div class="container narrow">
+                <div class="section-heading center">
+                    <span class="section-tag">What to Expect</span>
+                    <h2>What the output means</h2>
+                </div>
+
+                <p class="lead">
+                    After a successful upload, the system generates forecasted financial values for
+                    each year from the selected base year up to the selected target year.
+                </p>
+
+                <p>
+                    The output is not a simple label or score. Instead, the model produces
+                    projected numerical values for revenue, gross profit, interest expense,
+                    operating expense, tax, and net income.
+                </p>
+
+                <p>
+                    For multi-year predictions, the system works recursively. Each predicted year
+                    becomes the input for forecasting the next one, creating a year-by-year
+                    projected sequence.
+                </p>
+
+                <p>
+                    Forecasts should be understood as model-based projections. The quality of the
+                    result depends on the structure, completeness, and consistency of the uploaded
+                    workbook.
+                </p>
+            </div>
+        </section>
+
+        <section class="section cta-section">
+            <div class="container cta-box">
+                <div>
+                    <span class="section-tag">Ready to test it?</span>
+                    <h2>Upload your file and see the forecast in action</h2>
+                    <p>
+                        Try the model using your own workbook or one of the sample input files
+                        provided on the Try It page.
+                    </p>
+                </div>
+                <a href="/upload" class="btn btn-primary">Try It</a>
+            </div>
+        </section>
+    </main>
+
+    <div class="image-modal" id="imageModal" aria-hidden="true">
+        <div class="image-modal-backdrop" id="modalBackdrop"></div>
+        <div class="image-modal-content">
+            <button class="image-modal-close" id="modalClose" type="button" aria-label="Close image preview">&times;</button>
+            <h3 id="modalTitle"></h3>
+            <img id="modalImage" src="" alt="">
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalClose = document.getElementById('modalClose');
+        const modalBackdrop = document.getElementById('modalBackdrop');
+        const triggers = document.querySelectorAll('.preview-trigger');
+
+        function openModal(src, title, alt) {
+            modalImage.src = src;
+            modalImage.alt = alt || title;
+            modalTitle.textContent = title;
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            modalImage.src = '';
+            document.body.style.overflow = '';
+        }
+
+        triggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const img = trigger.querySelector('img');
+                openModal(trigger.dataset.img, trigger.dataset.title, img ? img.alt : '');
+            });
+        });
+
+        modalClose.addEventListener('click', closeModal);
+        modalBackdrop.addEventListener('click', closeModal);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

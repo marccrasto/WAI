@@ -3,29 +3,311 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--Set the Title of the document-->
-    <title>Revenue Prediction</title>
-    <!--Set the stylesheet that will be referred to when building the page (in this case style.css)-->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-    <!--Set the script, 'defer' means to first parse the html page while downloading the javascript file in the background. That way the .js file could refer to the elements in the html file. The defer attribute is only for external scripts (should only be used if the src attribute is present).-->
+    <title>ForecastAI | Financial Forecasting with Deep Learning</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="quiz-container" id="quiz">
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <div class="quiz-header">
-                <h1 id="Title">Revenue Prediction</h1>
-                <p>Description</p>
-                <div class="textInput">
-                    <input type="text" id="input1" name="bYear" class="input" placeholder="Enter base year (ex. 2008)" autocomplete="off">
-                    <input type="text" id="input2" name="pYear" class="input" placeholder="Enter predict year (MAX: 2028)" autocomplete="off">
+    <header class="site-header">
+        <div class="container nav-container">
+            <a href="/" class="logo">ForecastAI</a>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/how">How It Works</a>
+                <a href="/upload">Try It</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container hero-grid">
+                <div class="hero-copy">
+                    <span class="eyebrow">Deep Learning • Financial Forecasting • Industry Trends</span>
+                    <h1>Forecast future company financials with AI</h1>
+                    <p class="hero-text">
+                        Upload a company financial statement, choose a base year, and generate
+                        multi year forecasts using a deep neural network that combines company
+                        financial history with industry level trends.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a href="/upload" class="btn btn-primary">Try the Model</a>
+                        <a href="/how" class="btn btn-secondary">Learn How It Works</a>
+                    </div>
                 </div>
-                <div class="inputArea">
-                    <label for="fileUpload" onclick="saveFile()" class="customFileUpload">Upload File</label>
-                    <input type="file" class="inputFile" name="file" id="fileUpload">
+
+                <div class="hero-panel">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <span class="panel-dot"></span>
+                            <span class="panel-dot"></span>
+                            <span class="panel-dot"></span>
+                        </div>
+
+                        <div class="forecast-preview">
+                            <div class="preview-block">
+                                <p class="preview-label">Input Features</p>
+                                <ul>
+                                    <li>Revenue</li>
+                                    <li>Gross Profit</li>
+                                    <li>Interest Expense</li>
+                                    <li>Operating Expense</li>
+                                    <li>Tax</li>
+                                    <li>Net Income</li>
+                                </ul>
+                            </div>
+
+                            <div class="preview-arrow">→</div>
+
+                            <div class="preview-block">
+                                <p class="preview-label">Industry Context</p>
+                                <ul>
+                                    <li>Revenue Change %</li>
+                                    <li>Employment Change %</li>
+                                    <li>Wages Change %</li>
+                                </ul>
+                            </div>
+
+                            <div class="preview-arrow">→</div>
+
+                            <div class="preview-block">
+                                <p class="preview-label">Forecast Output</p>
+                                <ul>
+                                    <li>Next Year Revenue</li>
+                                    <li>Gross Profit</li>
+                                    <li>Expenses</li>
+                                    <li>Tax</li>
+                                    <li>Net Income</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="panel-footer">
+                            Recursive year by year forecasting
+                        </div>
+                    </div>
                 </div>
             </div>
-            <button id="submit" onclick="this.blur();">Submit</button>
-        </form>
-    </div>
+        </section>
+
+        <section class="section section-light">
+            <div class="container narrow">
+                <div class="section-heading">
+                    <span class="section-tag">Model Overview</span>
+                    <h2>What this model does</h2>
+                </div>
+
+                <p class="lead">
+                    This project is a financial forecasting system powered by a deep neural network.
+                    Its purpose is to estimate how a company’s financial statement may evolve over
+                    time by looking at both the company’s historical financial data and the industry
+                    conditions surrounding it.
+                </p>
+
+                <p>
+                    Starting from a selected base year, the model uses key financial values from the
+                    company’s uploaded statement and combines them with industry level indicators such
+                    as revenue change, employment change, and wage change. It then predicts the next
+                    year’s financial values. For longer forecasts, each newly predicted year is fed
+                    back into the model to generate the following year, allowing the system to produce
+                    a multi year projection rather than a single one time estimate.
+                </p>
+
+                <p>
+                    In practical terms, the model acts like a forecasting engine. It does not simply
+                    label a company as good or bad. Instead, it produces projected numerical financial
+                    outputs that can help users understand where a company’s revenue, profit, and
+                    expenses may be heading under current conditions.
+                </p>
+            </div>
+        </section>
+
+        <section class="section section-dark">
+            <div class="container">
+                <div class="section-heading center">
+                    <span class="section-tag">Forecast Pipeline</span>
+                    <h2>How the system works</h2>
+                    <p class="section-subtext">
+                        A company file is parsed, industry trends are added, and the model forecasts
+                        the next financial year before repeating the process for future years.
+                    </p>
+                </div>
+
+                <div class="flow-grid">
+                    <div class="flow-card">
+                        <div class="flow-number">01</div>
+                        <h3>Upload financial statements</h3>
+                        <p>
+                            The user uploads an Excel file containing company financial statement data.
+                        </p>
+                    </div>
+
+                    <div class="flow-card">
+                        <div class="flow-number">02</div>
+                        <h3>Extract company metrics</h3>
+                        <p>
+                            The system pulls revenue, gross profit, interest expense, operating
+                            expense, tax, and net income from the uploaded file.
+                        </p>
+                    </div>
+
+                    <div class="flow-card">
+                        <div class="flow-number">03</div>
+                        <h3>Add industry context</h3>
+                        <p>
+                            Using the company’s SIC and NAICS mapping, the app adds revenue,
+                            employment, and wage trend data from industry report files.
+                        </p>
+                    </div>
+
+                    <div class="flow-card">
+                        <div class="flow-number">04</div>
+                        <h3>Generate forecasts</h3>
+                        <p>
+                            A deep neural network predicts the next year’s financial values, then
+                            repeats that process recursively for multi year forecasting.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-light">
+            <div class="container">
+                <div class="section-heading center">
+                    <span class="section-tag">Model Details</span>
+                    <h2>What the model looks at and what it outputs</h2>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>What the model looks at</h3>
+                        <p class="info-intro">
+                            The forecasting model uses both company level financial data and industry
+                            level trend data.
+                        </p>
+
+                        <div class="info-list-block">
+                            <h4>Company financial inputs</h4>
+                            <ul>
+                                <li>Revenue</li>
+                                <li>Gross Profit</li>
+                                <li>Interest Expense</li>
+                                <li>Operating Expense</li>
+                                <li>Tax</li>
+                                <li>Net Income</li>
+                            </ul>
+                        </div>
+
+                        <div class="info-list-block">
+                            <h4>Industry trend inputs</h4>
+                            <ul>
+                                <li>Revenue Change Percentage</li>
+                                <li>Employment Change Percentage</li>
+                                <li>Wages Change Percentage</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>What the model outputs</h3>
+                        <p class="info-intro">
+                            The model predicts the company’s next year financial values.
+                        </p>
+
+                        <div class="info-list-block">
+                            <h4>Forecasted values</h4>
+                            <ul>
+                                <li>Revenue</li>
+                                <li>Gross Profit</li>
+                                <li>Interest Expense</li>
+                                <li>Operating Expense</li>
+                                <li>Tax</li>
+                                <li>Net Income</li>
+                            </ul>
+                        </div>
+
+                        <div class="info-list-block">
+                            <h4>Multi year forecasting</h4>
+                            <p>
+                                If the user selects a future target year, each predicted year is used
+                                as the input for the next prediction, allowing the system to create a
+                                year by year projected sequence.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-soft">
+            <div class="container narrow">
+                <div class="section-heading center">
+                    <span class="section-tag">Why this approach matters</span>
+                    <h2>More than a simple spreadsheet projection</h2>
+                </div>
+
+                <p class="centered-text">
+                    Traditional forecasting methods often rely only on a company’s past values.
+                    This system goes further by incorporating industry conditions as well. That means
+                    the forecast is shaped not only by what the company did previously, but also by
+                    the wider business environment represented through industry trend indicators.
+                </p>
+
+                <p class="centered-text">
+                    By combining these two sources of information in a deep learning pipeline, the
+                    project aims to create a more informed simulation of how a company’s finances may
+                    develop over time.
+                </p>
+            </div>
+        </section>
+
+        <section class="section section-light">
+            <div class="container">
+                <div class="section-heading center">
+                    <span class="section-tag">Team</span>
+                    <h2>Project contributors</h2>
+                </div>
+
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="avatar-circle">MC</div>
+                        <h3>Marc Crasto</h3>
+                        <p class="role">Frontend Development • UI Design</p>
+                        <p class="bio">
+                            Worked on the user interface and helped shape how the forecasting model is
+                            presented and interacted with through the web application.
+                        </p>
+                        <a href="#" target="_blank" class="team-link">View LinkedIn</a>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="avatar-circle">EH</div>
+                        <h3>Leader Name</h3>
+                        <p class="role">Project Lead • Machine Learning</p>
+                        <p class="bio">
+                            Led the forecasting project and worked on the machine learning pipeline,
+                            model integration, and financial data workflow.
+                        </p>
+                        <a href="#" target="_blank" class="team-link">View LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section cta-section">
+            <div class="container cta-box">
+                <div>
+                    <span class="section-tag">Ready to try it?</span>
+                    <h2>Upload a financial statement and generate a forecast</h2>
+                    <p>
+                        Explore the model with your own input file or test it using one of the demo
+                        files provided in the application.
+                    </p>
+                </div>
+                <a href="/upload" class="btn btn-primary">Try It</a>
+            </div>
+        </section>
+    </main>
 </body>
 </html>
