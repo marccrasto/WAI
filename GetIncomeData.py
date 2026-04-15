@@ -1,20 +1,13 @@
 import pandas as pd
 import numpy as np
 import re
-
 from tqdm import tqdm
-import sys
-import os
-
-import ConvertCode as con
 import IncomeData as ida
 
 
-def getIncome(file):
-    file_path = r'C:\Users\awe50\OneDrive\Desktop\WAI\Demo\Demo\static\uploads\\'
-    full = file_path + file
-    print(full)
-    df = pd.read_excel(full, header=None)
+def getIncome(file_path):
+    df = pd.read_excel(file_path, header=None)
+
     SICCode = []
     RIncomeB = []
     RIncomeE = []
@@ -23,7 +16,6 @@ def getIncome(file):
 
     fIn = False
     fBa = False
-    nan = False
     flag = False
     CompName = []
     Shape = df.shape
@@ -32,16 +24,17 @@ def getIncome(file):
     x = 0
     while x < Limit:
         line = df.iloc[x][0]
-        # print(line)
-        if(pd.isna(line)):
-            if(fIn):
+
+        if pd.isna(line):
+            if fIn:
                 RIncomeE.append(x)
                 fIn = False
-            elif(fBa):
+            elif fBa:
                 RBalE.append(x)
                 fBa = False
-        elif(line == 'Report Date'):
-            if(flag):
+
+        elif str(line).strip() == 'Report Date':
+            if flag:
                 RBalB.append(x)
                 fBa = True
                 flag = False
@@ -49,52 +42,72 @@ def getIncome(file):
                 RIncomeB.append(x)
                 fIn = True
                 flag = True
+
         x += 1
+
     RBalE.append(x - 1)
+
+    print("RIncomeB:", RIncomeB)
+    print("RIncomeE:", RIncomeE)
+    print("RBalB:", RBalB)
+    print("RBalE:", RBalE)
+
     for y in tqdm(range(0, len(RBalE)), desc='Getting data from excel'):
         TempCode = []
         TempName = []
-        if(y == 0):
+
+        if y == 0:
             for z in range(0, RIncomeB[0]):
                 line = df.iloc[z][0]
-                if(line == "Primary SIC"):
+
+                if str(line).strip() == "Primary SIC":
                     String = df.iloc[z + 1][0]
-                    code = re.findall(pattern='\d{4}', string=String)
-                    code = code[0]
-                    TempCode.append(code)
-                elif(line == "General Company Information"):
+                    code = re.findall(pattern=r'\d{4}', string=str(String))
+                    if code:
+                        TempCode.append(code[0])
+
+                elif str(line).strip() == "General Company Information":
                     Name = df.iloc[z - 2][0]
                     TempName.append(Name)
-            if(len(TempName) == 1):
+
+            if len(TempName) == 1 and len(TempCode) >= 1:
                 SICCode.append(TempCode[0])
                 CompName.append(TempName[0])
-            else:
+            elif len(TempName) > 1 and len(TempCode) >= 1:
                 SICCode.append(TempCode[-1])
                 CompName.append(TempName[-1])
-            TempCode = []
-            TempName = []
 
-    print('Finished getting informaiton')
+    print('Finished getting information')
+    print("CompName:", CompName)
+    print("SICCode:", SICCode)
     print("There are {} companies' data".format(len(CompName)))
+
     first = True
     InData = []
 
     for i in range(0, len(CompName)):
         try:
-            if (first):
-                Num = RIncomeE[i] - RIncomeB[i] + 1
-                InData = ida.YearData(full, RIncomeB[i], Num, CompName[i], SICCode[i])
+            Num = RIncomeE[i] - RIncomeB[i] + 1
+
+            if first:
+                InData = ida.YearData(file_path, RIncomeB[i], Num, CompName[i], SICCode[i])
+                print("First extracted block shape:", np.array(InData).shape)
                 first = False
             else:
-                Num = RIncomeE[i] - RIncomeB[i] + 1
-                data = ida.YearData(full, RIncomeB[i], Num, CompName[i], SICCode[i])
-                if(len(data) > 0):
+                data = ida.YearData(file_path, RIncomeB[i], Num, CompName[i], SICCode[i])
+                print("Additional extracted block shape:", np.array(data).shape)
+                if len(data) > 0:
                     InData = np.concatenate((InData, data), axis=0)
-        except:
+
+        except Exception as e:
+            print("Extraction error:", e)
             continue
-    InColumn = ['Year', 'Revenue', 'GrossProfit', 'Interest_Expense', 'Operation_Expense', 'Tax', 'NetIncome', 'Company Name', 'SIC_Code']
+
+    InColumn = [
+        'Year', 'Revenue', 'GrossProfit', 'Interest_Expense',
+        'Operation_Expense', 'Tax', 'NetIncome', 'Company Name', 'SIC_Code'
+    ]
+
     di = pd.DataFrame(data=InData, columns=InColumn)
+    print("Final extracted rows:", len(di))
     return di
-
-
-#print(getIncome('Test.xlsx'))

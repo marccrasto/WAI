@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Try It | ForecastAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container nav-container">
+            <a href="/" class="logo">ForecastAI</a>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/how">How It Works</a>
+                <a href="/try">Try It</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-copy">
+                    <span class="eyebrow">Try It</span>
+                    <h1>Upload a workbook and generate a forecast</h1>
+                    <p class="hero-text">
+                        Download a sample input file or upload your own Excel workbook. The forecast
+                        preview and download option will appear on this page after processing.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-light">
+            <div class="container">
+                <div class="section-heading center">
+                    <span class="section-tag">Sample Files</span>
+                    <h2>Download example input workbooks</h2>
+                    <p class="centered-text">
+                        Use these sample files to test the model and understand the expected format.
+                    </p>
+                </div>
+
+                <div class="sample-files-grid">
+                    <a class="sample-file-card" href="{{ url_for('static', filename='samples/AirCanada.xlsx') }}" download>
+                        <h3>Air Canada</h3>
+                        <span>Download sample</span>
+                    </a>
+
+                    <a class="sample-file-card" href="{{ url_for('static', filename='samples/RBC.xlsx') }}" download>
+                        <h3>RBC</h3>
+                        <span>Download sample</span>
+                    </a>
+
+                    <a class="sample-file-card" href="{{ url_for('static', filename='samples/TD.xlsx') }}" download>
+                        <h3>TD</h3>
+                        <span>Download sample</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-soft">
+            <div class="container">
+                <div class="section-heading center">
+                    <span class="section-tag">Upload</span>
+                    <h2>Run the model on your workbook</h2>
+                </div>
+
+                <div class="upload-shell">
+                    <form id="forecastForm" class="upload-form" enctype="multipart/form-data">
+                        <div class="form-grid">
+                            <div class="form-field full-width">
+                                <label for="file">Excel workbook</label>
+
+                                <div class="custom-file-upload">
+                                    <input type="file" id="file" name="file" accept=".xlsx,.xls" required>
+                                    <label for="file" class="file-btn">Choose Excel File</label>
+                                    <span id="fileName" class="file-name">No file chosen</span>
+                                </div>
+
+                                <small>
+                                    Upload a single Excel workbook containing company info, income statement, and balance sheet sections.
+                                </small>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="bYear">Base year</label>
+                                <input type="number" id="bYear" name="bYear" placeholder="e.g. 2019" required>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="pYear">Prediction year</label>
+                                <input type="number" id="pYear" name="pYear" placeholder="e.g. 2023" required>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Generate Forecast</button>
+                        </div>
+
+                        <div id="formMessage" class="form-message" aria-live="polite"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-light" id="resultsSection" style="display: none;">
+            <div class="container">
+                <div class="section-heading center">
+                    <span class="section-tag">Results</span>
+                    <h2>Forecast preview</h2>
+                    <p class="centered-text">
+                        Here is a preview of the generated output. You can also download the full Excel file.
+                    </p>
+                </div>
+
+                <div class="results-actions">
+                    <a id="downloadBtn" class="btn btn-primary" href="#" download>Download Output Excel</a>
+                </div>
+
+                <div class="results-table-wrap">
+                    <table class="results-table" id="resultsTable">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="loading-modal" id="loadingModal" aria-hidden="true">
+        <div class="loading-backdrop"></div>
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h3>Processing workbook...</h3>
+            <p>Please wait while the model generates your forecast.</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById("forecastForm");
+        const loadingModal = document.getElementById("loadingModal");
+        const formMessage = document.getElementById("formMessage");
+        const resultsSection = document.getElementById("resultsSection");
+        const resultsTable = document.getElementById("resultsTable");
+        const downloadBtn = document.getElementById("downloadBtn");
+        const fileInput = document.getElementById("file");
+        const fileName = document.getElementById("fileName");
+
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length > 0) {
+                fileName.textContent = fileInput.files[0].name;
+            } else {
+                fileName.textContent = "No file chosen";
+            }
+        });
+
+        function showLoading() {
+            loadingModal.classList.add("active");
+            loadingModal.setAttribute("aria-hidden", "false");
+            document.body.style.overflow = "hidden";
+        }
+
+        function hideLoading() {
+            loadingModal.classList.remove("active");
+            loadingModal.setAttribute("aria-hidden", "true");
+            document.body.style.overflow = "";
+        }
+
+        function renderTable(columns, rows) {
+            const thead = resultsTable.querySelector("thead");
+            const tbody = resultsTable.querySelector("tbody");
+
+            thead.innerHTML = "";
+            tbody.innerHTML = "";
+
+            const headRow = document.createElement("tr");
+            columns.forEach(col => {
+                const th = document.createElement("th");
+                th.textContent = col;
+                headRow.appendChild(th);
+            });
+            thead.appendChild(headRow);
+
+            rows.forEach(row => {
+                const tr = document.createElement("tr");
+                columns.forEach(col => {
+                    const td = document.createElement("td");
+                    td.textContent = row[col] ?? "";
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            formMessage.textContent = "";
+            resultsSection.style.display = "none";
+
+            const formData = new FormData(form);
+            showLoading();
+
+            try {
+                const response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+                hideLoading();
+
+                if (!data.success) {
+                    formMessage.textContent = data.error || "Something went wrong.";
+                    formMessage.className = "form-message error";
+                    return;
+                }
+
+                formMessage.textContent = data.message;
+                formMessage.className = "form-message success";
+
+                renderTable(data.columns, data.rows);
+                downloadBtn.href = data.download_url;
+                resultsSection.style.display = "block";
+                resultsSection.scrollIntoView({ behavior: "smooth" });
+
+            } catch (error) {
+                hideLoading();
+                formMessage.textContent = "Unable to process the file right now.";
+                formMessage.className = "form-message error";
+            }
+        });
+    </script>
+</body>
+</html>
