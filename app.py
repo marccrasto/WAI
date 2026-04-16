@@ -12,6 +12,8 @@ import time
 
 app = Flask(__name__, static_url_path='/static')
 
+DEMO_MODE = True
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
 SAVED_FOLDER = os.path.join(BASE_DIR, "static", "saved")
@@ -165,9 +167,50 @@ def upload_file():
         except ValueError:
             return jsonify({"success": False, "error": "Years must be valid numbers."}), 400
 
+        if predict_year <= base_year:
+            return jsonify({"success": False, "error": "Prediction year must be greater than base year."}), 400
+
         filename = secure_filename(uploaded_file.filename)
         upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         uploaded_file.save(upload_path)
+
+        if DEMO_MODE:
+            columns = [
+                "Year",
+                "Revenue",
+                "GrossProfit",
+                "Interest_Expense",
+                "Operation_Expense",
+                "Tax",
+                "Net Income"
+            ]
+
+            sample_rows = [
+                {"Year": 2022, "Revenue": 16245000.15, "GrossProfit": 5982000.47, "Interest_Expense": 421000.22, "Operation_Expense": 4695000.81, "Tax": 184000.11, "Net Income": 735999.44},
+                {"Year": 2023, "Revenue": 17482000.42, "GrossProfit": 6431000.83, "Interest_Expense": 409800.16, "Operation_Expense": 4889000.27, "Tax": 201400.29, "Net Income": 930998.91},
+                {"Year": 2024, "Revenue": 18396000.77, "GrossProfit": 6775000.22, "Interest_Expense": 397400.73, "Operation_Expense": 5022000.64, "Tax": 216200.45, "Net Income": 1113400.18},
+                {"Year": 2025, "Revenue": 19154000.11, "GrossProfit": 7048000.35, "Interest_Expense": 386100.18, "Operation_Expense": 5140000.32, "Tax": 229500.74, "Net Income": 1291899.22},
+                {"Year": 2026, "Revenue": 19892000.63, "GrossProfit": 7316000.58, "Interest_Expense": 374900.41, "Operation_Expense": 5264000.95, "Tax": 243700.30, "Net Income": 1466099.87},
+                {"Year": 2027, "Revenue": 20687000.29, "GrossProfit": 7599000.61, "Interest_Expense": 362800.64, "Operation_Expense": 5397000.28, "Tax": 258900.88, "Net Income": 1660300.49}
+            ]
+            demo_output = "demo_forecast.xlsx"
+
+            preview_rows = [row for row in sample_rows if base_year < row["Year"] <= predict_year]
+
+            if not preview_rows:
+                return jsonify({
+                    "success": False,
+                    "error": "No demo forecast rows fall within the selected year range."
+                }), 400
+
+            return jsonify({
+                "success": True,
+                "message": "Demo forecast generated successfully.",
+                "columns": columns,
+                "rows": preview_rows,
+                "download_url": f"/static/samples/{demo_output}",
+                "demo_mode": True
+            })
 
         output_name, columns, preview_rows = run_forecast(upload_path, filename, base_year, predict_year)
 
@@ -176,7 +219,8 @@ def upload_file():
             "message": "Forecast generated successfully.",
             "columns": columns,
             "rows": preview_rows,
-            "download_url": f"/download/{output_name}"
+            "download_url": f"/download/{output_name}",
+            "demo_mode": False
         })
 
     except RequestEntityTooLarge:
