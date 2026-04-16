@@ -8,6 +8,7 @@ from keras.models import load_model
 import GetIncomeData as GI
 import ConvertCode as con
 import sys
+import time
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -66,14 +67,21 @@ def GetArray(di, y):
         values.append(float(di.iloc[row_index][col]))
     return np.array(values)
 
+industry_cache = {}
 
 def AddInfor(array, sic, year, name):
-    data = con.index(sic, year, name)
+    key = (str(sic), int(year), str(name))
+    if key not in industry_cache:
+        industry_cache[key] = con.index(sic, year, name)
+    data = industry_cache[key]
     return np.hstack((array, data))
 
 
 def run_forecast(file_path, file_name, base_year, predict_year):
+    start_time = time.time()
+
     df = GI.getIncome(file_path)
+    print("getIncome took:", time.time() - start_time)
 
     if df.empty:
         raise ValueError("No readable financial data was found in the uploaded workbook.")
@@ -82,32 +90,42 @@ def run_forecast(file_path, file_name, base_year, predict_year):
     if times <= 0:
         raise ValueError("Prediction year must be greater than base year.")
 
+    if times > 10:
+        raise ValueError("Prediction range is too large. Please choose a range of 10 years or less.")
+
     sic = df.iloc[0]['SIC_Code']
     name = df.iloc[0]['Company Name']
 
-    answer = np.nan
-    array = np.nan
-    first_answer = True
+    answer = None
+    array = None
 
     for i in range(times):
+        loop_start = time.time()
+
         if i == 0:
             array = GetArray(df, base_year)
 
-        array = AddInfor(array, sic, base_year, name)
-        array = array.reshape(1, -1)
+        info_start = time.time()
+        array_with_info = AddInfor(array, sic, base_year, name)
+        print(f"AddInfor for year {base_year} took:", time.time() - info_start)
 
-        income = model.predict(array, verbose=0)
+        pred_start = time.time()
+        model_input = array_with_info.reshape(1, -1)
+        income = model.predict(model_input, verbose=0)
+        print(f"predict for year {base_year} took:", time.time() - pred_start)
+
         array = income.flatten()
 
         base_year += 1
         year_arr = np.array([[base_year]])
         temp = np.concatenate((year_arr, income), axis=1)
 
-        if first_answer:
+        if answer is None:
             answer = temp
-            first_answer = False
         else:
             answer = np.concatenate((answer, temp), axis=0)
+
+        print(f"Total loop for year {base_year} took:", time.time() - loop_start)
 
     columns = ['Year', 'Revenue', 'GrossProfit', 'Interest_Expense', 'Operation_Expense', 'Tax', 'Net Income']
     result_df = pd.DataFrame(answer, columns=columns)
@@ -122,6 +140,8 @@ def run_forecast(file_path, file_name, base_year, predict_year):
         preview_df[col] = preview_df[col].round(2)
 
     preview_rows = preview_df.head(10).to_dict(orient="records")
+
+    print("Total run_forecast time:", time.time() - start_time)
 
     return output_name, columns, preview_rows
 

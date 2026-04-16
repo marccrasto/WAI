@@ -131,5 +131,5 @@ def index(SIC, year, CName):
         else:
             return([np.nan, np.nan, np.nan])
 
-
-print(index(831, 2013, '0187279 B C Ltd (NBB: LNXG F)'))
+if __name__ == '__main__':
+    print(index(831, 2013, '0187279 B C Ltd (NBB: LNXG F)'))
