@@ -40,6 +40,10 @@ def how_page():
 def try_page():
     return render_template("try.html")
 
+@app.route('/health')
+def health():
+    return {"status": "ok"}
+
 
 def GetRow(di, y):
     sp = di.shape
