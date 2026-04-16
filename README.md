@@ -133,6 +133,7 @@ http://127.0.0.1:8000
 ---
 
 ## 📁 Project Structure
+```
 .
 ├── app.py
 ├── templates/
@@ -143,6 +144,7 @@ http://127.0.0.1:8000
 │ └── samples/
 ├── DNN_600_0.9259_times.h5
 └── README.md
+```
 
 ---
 
