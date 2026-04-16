@@ -118,6 +118,13 @@ pip install -r requirements.txt
 git lfs pull
 ```
 
+### 4. Switch DEMO_MODE Off
+
+```
+# Go to app.py
+# Set DEMO_MODE = False
+```
+
 ### 4. Run the application
 
 ```
@@ -128,22 +135,6 @@ python app.py
 
 ```
 http://127.0.0.1:8000
-```
-
----
-
-## 📁 Project Structure
-```
-.
-├── app.py
-├── templates/
-├── static/
-│ ├── css/
-│ ├── js/
-│ ├── uploads/
-│ └── samples/
-├── DNN_600_0.9259_times.h5
-└── README.md
 ```
 
 ---
